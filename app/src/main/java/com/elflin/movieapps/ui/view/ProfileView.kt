@@ -1,5 +1,6 @@
 package com.elflin.movieapps.ui.view
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -15,15 +16,20 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -38,7 +44,12 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.elflin.movieapps.R
+import kotlinx.coroutines.launch
+import java.util.regex.Pattern
 
+
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileView(){
 
@@ -48,84 +59,136 @@ fun ProfileView(){
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.ic_profile),
-            contentDescription = "Profile Picture",
-            modifier = Modifier
-                .size(100.dp)
-                .clip(CircleShape)
-                .border(2.dp, Color.Gray, CircleShape)
-        )
-        CustomTextField(
-            value = name,
-            onValueChanged = {name = it} ,
-            text = "Name",
-            keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Next
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp)
-        )
-        CustomTextField(
-            value = phone,
-            onValueChanged = {phone = it} ,
-            text = "Phone",
-            keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Phone,
-                imeAction = ImeAction.Next
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp)
-        )
-        CustomTextField(
-            value = age,
-            onValueChanged = {age = it} ,
-            text = "Age",
-            keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Number,
-                imeAction = ImeAction.Next
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp)
-        )
-        CustomEmailField(
-            value = email,
-            onValueChanged = {email = it} ,
-            text = "Email",
-            keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Email,
-                imeAction = ImeAction.Next
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            isEmailValid = false
-        )
-        CustomPasswordField(
-            value = password,
-            onValueChanged = {password = it} ,
-            text = "Password",
-            keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Password,
-                imeAction = ImeAction.Done
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            isPasswordValid = false
-        )
-    }
+    var isEmailValid by rememberSaveable { mutableStateOf(true) }
+    var isPasswordValid by rememberSaveable { mutableStateOf(true) }
+
+    val snackbarHostState = remember {SnackbarHostState()}
+    val scope = rememberCoroutineScope()
+
+    Scaffold(
+        snackbarHost = {SnackbarHost(snackbarHostState)},
+        content = {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_profile),
+                    contentDescription = "Profile Picture",
+                    modifier = Modifier
+                        .size(100.dp)
+                        .clip(CircleShape)
+                        .border(2.dp, Color.Gray, CircleShape)
+                )
+                CustomTextField(
+                    value = name,
+                    onValueChanged = {name = it} ,
+                    text = "Name",
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Next
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                )
+                CustomTextField(
+                    value = phone,
+                    onValueChanged = {phone = it} ,
+                    text = "Phone",
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Phone,
+                        imeAction = ImeAction.Next
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                )
+                CustomTextField(
+                    value = age,
+                    onValueChanged = {age = it} ,
+                    text = "Age",
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Next
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                )
+                CustomEmailField(
+                    value = email,
+                    onValueChanged = {email = it} ,
+                    text = "Email",
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Email,
+                        imeAction = ImeAction.Next
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    isEmailValid = isEmailValid
+                )
+                CustomPasswordField(
+                    value = password,
+                    onValueChanged = {password = it} ,
+                    text = "Password",
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Password,
+                        imeAction = ImeAction.Done
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    isPasswordValid = isPasswordValid
+                )
+
+                Button(
+                    onClick = {
+                        isEmailValid = isValidEmail(email)
+                        isPasswordValid = isValidPassword(password)
+
+                        if (isEmailValid && isPasswordValid){
+                            scope.launch {
+                                snackbarHostState.showSnackbar(
+                                    "Data $name saved"
+                                )
+                            }
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 16.dp),
+                    enabled = name.isNotBlank()&&phone.isNotBlank()&&age.isNotBlank()&&email.isNotBlank()&&password.isNotBlank()
+                )
+                {
+                    Text(text = "Submit")
+                }
+            }
+        }
+    )
+
+
+}
+
+// Function to validate email using regex
+fun isValidEmail(email: String): Boolean {
+    val emailPattern = Pattern.compile(
+        "^\\w+@[a-zA-Z_]+?\\.[a-zA-Z]{2,3}$",
+        Pattern.CASE_INSENSITIVE
+    )
+    return emailPattern.matcher(email).matches()
+}
+
+// Function to validate password
+fun isValidPassword(password: String): Boolean {
+    val passwordPattern = Pattern.compile(
+        "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#\$%^&+=!])(?=\\S+\$).{8,}\$"
+    )
+    return passwordPattern.matcher(password).matches()
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
