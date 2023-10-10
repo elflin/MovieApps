@@ -285,6 +285,6 @@ fun CustomPasswordField(
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun ProfilePreview(){
+private fun ProfilePreview(){
     ProfileView()
 }

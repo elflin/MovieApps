@@ -36,33 +36,48 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.elflin.movieapps.R
 import com.elflin.movieapps.data.DataSource
 import com.elflin.movieapps.model.Movie
+import com.elflin.movieapps.viewmodel.ListMovieUIState
+import com.elflin.movieapps.viewmodel.ListMovieViewModel
 
 @Composable
-fun ListMovieView(movieList: List<Movie>){
-
+fun ListMovieView(
+    movieList: List<Movie>,
+    onFavClicked: (Movie) -> Unit
+){
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
     ){
-        items(movieList){
-            MovieCard(it,
-                Modifier
+        items(movieList){movie ->
+
+            var isLikedView by rememberSaveable { mutableStateOf(movie.isLiked)}
+
+            MovieCard(
+                movie = movie,
+                modifier = Modifier
                     .padding(8.dp)
-                    .fillMaxSize())
+                    .fillMaxSize(),
+                onFavClicked = {
+                    onFavClicked(movie)
+                    isLikedView = movie.isLiked
+                },
+                isLikedView = isLikedView
+            )
         }
     }
 
 }
 
 @Composable
-fun MovieCard(movie: Movie, modifier: Modifier = Modifier){
-
-    var isLikedView by rememberSaveable {
-        mutableStateOf(false)
-    }
-
+fun MovieCard(
+    movie: Movie,
+    modifier: Modifier = Modifier,
+    onFavClicked: () -> Unit,
+    isLikedView: Boolean
+){
     Card(
         modifier = modifier
     ) {
@@ -80,9 +95,7 @@ fun MovieCard(movie: Movie, modifier: Modifier = Modifier){
                 )
 
                 FloatingActionButton(
-                    onClick = {
-                        isLikedView = !isLikedView
-                    },
+                    onClick = onFavClicked,
                     shape = CircleShape,
                     modifier = Modifier.padding(end = 4.dp, bottom = 4.dp)
                 ) {
@@ -150,6 +163,17 @@ fun MovieCard(movie: Movie, modifier: Modifier = Modifier){
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun ListMoviePreview(){
-    ListMovieView(DataSource().loadMovie())
+private fun ListMoviePreview(){
+    val listMovieViewModel: ListMovieViewModel = viewModel()
+    val status = listMovieViewModel.listMovieUIState
+    when(status){
+        is ListMovieUIState.Loading -> {}
+        is ListMovieUIState.Success -> ListMovieView(
+            movieList = status.data,
+            onFavClicked = {movie ->
+                listMovieViewModel.onFavClicked(movie)
+            }
+        )
+        is ListMovieUIState.Error ->{}
+    }
 }
