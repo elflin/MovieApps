@@ -128,7 +128,7 @@ fun MovieDetailView(
 private fun MovieDetailPreview(){
 
     val movieDetailViewModel: MovieDetailViewModel = viewModel()
-    movieDetailViewModel.getMovieById(1)
+    movieDetailViewModel.getMovieById(4)
 
     val status = movieDetailViewModel.movieDetailUiState
     when(status){

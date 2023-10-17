@@ -17,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -46,7 +47,8 @@ import com.elflin.movieapps.viewmodel.ListMovieViewModel
 @Composable
 fun ListMovieView(
     movieList: List<Movie>,
-    onFavClicked: (Movie) -> Unit
+    onFavClicked: (Movie) -> Unit,
+    onCardClick: (Movie) -> Unit
 ){
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
@@ -64,6 +66,7 @@ fun ListMovieView(
                     onFavClicked(movie)
                     isLikedView = movie.isLiked
                 },
+                onCardClicked = {onCardClick(movie)},
                 isLikedView = isLikedView
             )
         }
@@ -71,15 +74,18 @@ fun ListMovieView(
 
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MovieCard(
     movie: Movie,
     modifier: Modifier = Modifier,
     onFavClicked: () -> Unit,
+    onCardClicked: () -> Unit,
     isLikedView: Boolean
 ){
     Card(
-        modifier = modifier
+        modifier = modifier,
+        onClick = onCardClicked
     ) {
         Column {
             Box(
@@ -172,7 +178,8 @@ private fun ListMoviePreview(){
             movieList = status.data,
             onFavClicked = {movie ->
                 listMovieViewModel.onFavClicked(movie)
-            }
+            },
+            {}
         )
         is ListMovieUIState.Error ->{}
     }
