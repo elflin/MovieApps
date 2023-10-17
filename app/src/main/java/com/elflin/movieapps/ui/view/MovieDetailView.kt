@@ -31,8 +31,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.elflin.movieapps.data.DataSource
 import com.elflin.movieapps.model.Movie
+import com.elflin.movieapps.viewmodel.MovieDetailUiState
+import com.elflin.movieapps.viewmodel.MovieDetailViewModel
 
 @Composable
 fun MovieDetailView(
@@ -124,9 +127,18 @@ fun MovieDetailView(
 @Composable
 private fun MovieDetailPreview(){
 
-    MovieDetailView(
-        movie = DataSource().loadMovie()[0],
-        onFavClicked = {}
-    )
+    val movieDetailViewModel: MovieDetailViewModel = viewModel()
+    movieDetailViewModel.getMovieById(1)
 
+    val status = movieDetailViewModel.movieDetailUiState
+    when(status){
+        is MovieDetailUiState.Loading -> {}
+        is MovieDetailUiState.Success -> {
+            MovieDetailView(
+                movie = status.data,
+                onFavClicked = {}
+            )
+        }
+        is MovieDetailUiState.Error -> {}
+    }
 }
