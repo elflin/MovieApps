@@ -1,5 +1,6 @@
 package com.elflin.movieapps.viewmodel
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -7,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.elflin.movieapps.data.DataSource
 import com.elflin.movieapps.model.Movie
+import com.elflin.movieapps.repository.MovieDBContainer
 import kotlinx.coroutines.launch
 
 sealed interface ListMovieUIState{
@@ -28,9 +30,10 @@ class ListMovieViewModel: ViewModel() {
     fun loadData(){
         viewModelScope.launch{
             try {
-                data = DataSource().loadMovie()
+                data = MovieDBContainer().movieDBRepositories.getAllMovie(1)
                 listMovieUIState = ListMovieUIState.Success(data)
             }catch(e: Exception){
+                Log.d("NetworkTest", e.message.toString())
                 listMovieUIState = ListMovieUIState.Error
             }
         }
