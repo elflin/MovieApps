@@ -32,11 +32,8 @@ enum class ListScreen(){
 fun MovieAppsRoute(){
 
     val navController = rememberNavController()
-    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
-    Scaffold(
-
-    ) {innerPadding ->
+    Scaffold{innerPadding ->
         NavHost(
             navController = navController,
             startDestination = ListScreen.ListMovie.name,
