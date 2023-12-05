@@ -6,9 +6,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
 import com.elflin.movieapps.data.DataSource
+import com.elflin.movieapps.data.DataStoreManager
 import com.elflin.movieapps.model.Movie
 import com.elflin.movieapps.repository.MovieDBContainer
+import com.elflin.movieapps.repository.MyDBContainer
+import com.elflin.movieapps.ui.ListScreen
 import kotlinx.coroutines.launch
 
 sealed interface ListMovieUIState{
@@ -42,5 +46,20 @@ class ListMovieViewModel: ViewModel() {
     fun onFavClicked(movie: Movie){
         movie.isLiked = !movie.isLiked
         // sent server updated movie to server
+    }
+
+    fun logout(
+        navController: NavController,
+        dataStore: DataStoreManager
+    ) {
+        viewModelScope.launch {
+            MyDBContainer().myDBRepositories.logout()
+            dataStore.saveToken("")
+            MyDBContainer.ACCESS_TOKEN = ""
+
+            navController.navigate(ListScreen.Login.name){
+                popUpTo(ListScreen.ListMovie.name){inclusive = true}
+            }
+        }
     }
 }

@@ -24,6 +24,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,6 +47,8 @@ fun LoginView(
 
     var isEmailValid by rememberSaveable { mutableStateOf(true) }
     var isPasswordValid by rememberSaveable { mutableStateOf(true) }
+
+    val context = LocalContext.current
 
     Scaffold(
         content = {
@@ -85,7 +88,18 @@ fun LoginView(
 
                 Button(
                     onClick = {
-                        loginViewModel.ButtonLogin()
+                        isEmailValid = isValidEmail(email)
+                        isPasswordValid = isValidPassword(password)
+
+                        if (isEmailValid && isPasswordValid){
+                            loginViewModel.ButtonLogin(
+                                email,
+                                password,
+                                context,
+                                navController,
+                                dataStore
+                            )
+                        }
                     },
                     modifier = Modifier
                         .fillMaxWidth()

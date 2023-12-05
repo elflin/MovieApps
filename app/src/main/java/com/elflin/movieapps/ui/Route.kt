@@ -1,6 +1,7 @@
 package com.elflin.movieapps.ui
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -86,7 +87,10 @@ fun MovieAppsRoute(){
                         },
                         onCardClick = {
                             navController.navigate(ListScreen.MovieDetail.name+"/"+it.id)
-                        }
+                        },
+                        listMovieViewModel,
+                        navController,
+                        dataStore
                     )
                     is ListMovieUIState.Error ->{}
                 }
