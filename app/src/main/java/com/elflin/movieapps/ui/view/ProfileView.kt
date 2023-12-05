@@ -186,7 +186,7 @@ fun isValidEmail(email: String): Boolean {
 // Function to validate password
 fun isValidPassword(password: String): Boolean {
     val passwordPattern = Pattern.compile(
-        "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#\$%^&+=!])(?=\\S+\$).{8,}\$"
+        "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+\$).{8,}\$"
     )
     return passwordPattern.matcher(password).matches()
 }
