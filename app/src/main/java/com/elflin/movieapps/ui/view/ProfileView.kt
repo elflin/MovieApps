@@ -1,8 +1,13 @@
 package com.elflin.movieapps.ui.view
 
 import android.annotation.SuppressLint
+import android.app.Instrumentation.ActivityResult
+import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -36,6 +41,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -43,6 +50,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.elflin.movieapps.R
 import kotlinx.coroutines.launch
 import java.util.regex.Pattern
@@ -65,6 +74,14 @@ fun ProfileView(){
     val snackbarHostState = remember {SnackbarHostState()}
     val scope = rememberCoroutineScope()
 
+    var selectedImage by rememberSaveable { mutableStateOf<Uri?>(null) }
+
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+    ){
+        selectedImage = it
+    }
+
     Scaffold(
         snackbarHost = {SnackbarHost(snackbarHostState)},
         content = {
@@ -75,13 +92,21 @@ fun ProfileView(){
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_profile),
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(selectedImage)
+                        .crossfade(true)
+                        .build(),
+                    placeholder = painterResource(id = R.drawable.ic_profile),
                     contentDescription = "Profile Picture",
                     modifier = Modifier
                         .size(100.dp)
                         .clip(CircleShape)
                         .border(2.dp, Color.Gray, CircleShape)
+                        .clickable {
+                            galleryLauncher.launch("image/*")
+                        },
+                    contentScale = ContentScale.Crop
                 )
                 CustomTextField(
                     value = name,

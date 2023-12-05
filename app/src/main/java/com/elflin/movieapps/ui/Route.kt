@@ -55,7 +55,7 @@ fun MovieAppsRoute(){
     Scaffold{innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = ListScreen.Login.name,
+            startDestination = ListScreen.Profile.name,
             modifier = Modifier.padding(innerPadding)
         ){
             composable(ListScreen.Login.name){
